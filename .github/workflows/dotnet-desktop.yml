@@ -1,32 +1,30 @@
-name: .NET
+name: .NET Windows
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
+
 jobs:
   build:
+    name: Build for Windows
     runs-on: windows-latest
-    name: "Build"
+
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
         with:
           submodules: false
-      - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: "9.0.x"
-          cache: false
 
-      - name: Cache NuGet packages
-        uses: actions/cache@v5.0.1
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v5
         with:
-          path: ${{ env.NUGET_PACKAGES }}
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
+          dotnet-version: latest
+          dotnet-channel: LTS
+          cache: true
 
       - name: Restore
         run: dotnet restore /p:Configuration=Release-win
